@@ -29,40 +29,18 @@ class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
   };
 
   // 效率分析数据
-  final List<RadarChartSectionData> efficiencyData = [
-    RadarChartSectionData(
-      value: 90,
-      title: '设备效率',
-      color: Colors.blue.withOpacity(0.5),
-    ),
-    RadarChartSectionData(
-      value: 85,
-      title: '发电效率',
-      color: Colors.green.withOpacity(0.5),
-    ),
-    RadarChartSectionData(
-      value: 95,
-      title: '并网效率',
-      color: Colors.orange.withOpacity(0.5),
-    ),
-    RadarChartSectionData(
-      value: 88,
-      title: '维护效率',
-      color: Colors.purple.withOpacity(0.5),
-    ),
-    RadarChartSectionData(
-      value: 92,
-      title: '调度效率',
-      color: Colors.red.withOpacity(0.5),
-    ),
+  final List<RadarEntry> efficiencyData = [
+    RadarEntry(value: 90), // 设备效率
+    RadarEntry(value: 85), // 发电效率
+    RadarEntry(value: 95), // 并网效率
+    RadarEntry(value: 88), // 维护效率
+    RadarEntry(value: 92), // 调度效率
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('发电监测中心'),
-      ),
+      appBar: AppBar(title: const Text('发电监测中心')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -89,38 +67,39 @@ class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,
                       childAspectRatio: 1.5,
-                      children: powerStats.entries.map((entry) {
-                        return Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                entry.key,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                      children:
+                          powerStats.entries.map((entry) {
+                            return Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                entry.key == '计划完成率'
-                                    ? '${entry.value.toStringAsFixed(1)}%'
-                                    : '${entry.value.toString()}kWh',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
-                                ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    entry.key,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    entry.key == '计划完成率'
+                                        ? '${entry.value.toStringAsFixed(1)}%'
+                                        : '${entry.value.toString()}kWh',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
+                            );
+                          }).toList(),
                     ),
                   ],
                 ),
@@ -190,6 +169,8 @@ class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
                               dataEntries: efficiencyData,
                               fillColor: Colors.blue.withOpacity(0.2),
                               borderColor: Colors.blue,
+                              entryRadius: 3,
+                              borderWidth: 2,
                             ),
                           ],
                           titleTextStyle: const TextStyle(
@@ -197,8 +178,15 @@ class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
                             fontSize: 12,
                           ),
                           getTitle: (index, angle) {
+                            const titles = [
+                              '设备效率',
+                              '发电效率',
+                              '并网效率',
+                              '维护效率',
+                              '调度效率',
+                            ];
                             return RadarChartTitle(
-                              text: efficiencyData[index].title,
+                              text: titles[index],
                               angle: angle,
                             );
                           },
@@ -207,9 +195,12 @@ class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
                             color: Colors.black,
                             fontSize: 10,
                           ),
-                          tickBorderData: BorderSide(color: Colors.grey[300]!),
-                          borderData: BorderSide(color: Colors.grey[300]!),
-                          gridBorderData: BorderSide(color: Colors.grey[300]!),
+                          tickBorderData: const BorderSide(color: Colors.grey),
+                          borderData: FlBorderData(
+                            show: true,
+                            border: Border.all(),
+                          ),
+                          gridBorderData: const BorderSide(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -222,4 +213,4 @@ class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
       ),
     );
   }
-} 
+}
