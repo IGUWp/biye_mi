@@ -1,3 +1,5 @@
+import 'package:biye_mid/device_detail_page.dart';
+import 'package:biye_mid/power_data_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -9,12 +11,12 @@ class MaintenancePage extends StatefulWidget {
 }
 
 class _MaintenancePageState extends State<MaintenancePage> {
-  // 设备状态数据
-  final List<Map<String, dynamic>> deviceStatus = [
-    {'name': '风机1号', 'status': '正常', 'power': 2000, 'speed': 12.5},
-    {'name': '风机2号', 'status': '警告', 'power': 1800, 'speed': 11.8},
-    {'name': '风机3号', 'status': '正常', 'power': 2100, 'speed': 13.2},
-    {'name': '风机4号', 'status': '故障', 'power': 0, 'speed': 0},
+  // 使用 DeviceStatus 模型存储设备状态数据
+  final List<DeviceStatus> deviceStatus = [
+    DeviceStatus(name: '风机1号', status: '正常', power: 2000, speed: 12.5),
+    DeviceStatus(name: '风机2号', status: '警告', power: 1800, speed: 11.8),
+    DeviceStatus(name: '风机3号', status: '正常', power: 2100, speed: 13.2),
+    DeviceStatus(name: '风机4号', status: '故障', power: 0, speed: 0),
   ];
 
   // 设备参数趋势数据
@@ -29,9 +31,7 @@ class _MaintenancePageState extends State<MaintenancePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('运维监控中心'),
-      ),
+      appBar: AppBar(title: const Text('设备维护')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -52,28 +52,71 @@ class _MaintenancePageState extends State<MaintenancePage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    ...deviceStatus.map((device) => ListTile(
-                          title: Text(device['name']),
-                          subtitle: Text('功率: ${device['power']}kW'),
-                          trailing: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: device['status'] == '正常'
-                                  ? Colors.green
-                                  : device['status'] == '警告'
-                                      ? Colors.orange
-                                      : Colors.red,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              device['status'],
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        )),
+                    GridView.count(
+                      shrinkWrap: true,
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                      childAspectRatio: 1.5,
+                      children:
+                          deviceStatus.map((device) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => DeviceDetailPage(
+                                          device: {
+                                            'name': device.name,
+                                            'status': device.status,
+                                            'power': device.power,
+                                            'speed': device.speed,
+                                          },
+                                        ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color:
+                                      device.status == '正常'
+                                          ? Colors.green[100]
+                                          : device.status == '警告'
+                                          ? Colors.orange[100]
+                                          : Colors.red[100],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      device.name,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      '状态: ${device.status}',
+                                      style: TextStyle(
+                                        color:
+                                            device.status == '正常'
+                                                ? Colors.green
+                                                : device.status == '警告'
+                                                ? Colors.orange
+                                                : Colors.red,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                    ),
                   ],
                 ),
               ),
@@ -122,4 +165,4 @@ class _MaintenancePageState extends State<MaintenancePage> {
       ),
     );
   }
-} 
+}

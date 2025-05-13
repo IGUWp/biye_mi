@@ -1,9 +1,10 @@
-import 'package:biye_mid/bar_chart_page.dart';
-import 'package:biye_mid/pie_chart_page.dart';
-import 'package:biye_mid/radar_chart_page.dart';
+import 'package:biye_mid/tool/bar_chart_page.dart';
+import 'package:biye_mid/tool/pie_chart_page.dart';
+import 'package:biye_mid/tool/radar_chart_page.dart';
+import 'package:biye_mid/totalPage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'line_chart_page.dart'; // 导入折线图页面
+import 'tool/line_chart_page.dart'; // 导入折线图页面
 import 'maintenance_page.dart';
 import 'management_page.dart';
 import 'power_monitoring_page.dart';
@@ -21,10 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '风电场监控系统',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
       home: const HomePage(),
     );
   }
@@ -36,9 +34,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('风电场监控系统'),
-      ),
+      appBar: AppBar(title: const Text('风电场监控系统')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -46,13 +42,11 @@ class HomePage extends StatelessWidget {
           children: [
             const Text(
               '请选择您的角色',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
             Expanded(
+              flex: 1, // 设置 GridView 占用的空间比例
               child: GridView.count(
                 crossAxisCount: 2,
                 mainAxisSpacing: 16,
@@ -109,6 +103,11 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+            const Expanded(
+              flex: 1, // 设置 DashboardPage 占用的空间比例
+              child: DashboardPage(), // 嵌入生产监控页面
+            ),
           ],
         ),
       ),
@@ -132,21 +131,14 @@ class HomePage extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                color.withOpacity(0.7),
-                color,
-              ],
+              colors: [color.withOpacity(0.7), color],
             ),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                size: 48,
-                color: Colors.white,
-              ),
+              Icon(icon, size: 48, color: Colors.white),
               const SizedBox(height: 16),
               Text(
                 title,
@@ -163,17 +155,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-List<FlSpot> get allSpots => const [
-  FlSpot(0, 1),
-  FlSpot(1, 2),
-  FlSpot(2, 3),
-  FlSpot(3, 4),
-  FlSpot(4, 5),
-  FlSpot(5, 6),
-  FlSpot(6, 7),
-  FlSpot(7, 8),
-  FlSpot(8, 9),
-  FlSpot(9, 10),
-];
-List<int> showingTool = [3];

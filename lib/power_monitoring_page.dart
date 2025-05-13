@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:biye_mid/power_data_model.dart';
 
 class PowerMonitoringPage extends StatefulWidget {
   const PowerMonitoringPage({super.key});
@@ -9,15 +10,26 @@ class PowerMonitoringPage extends StatefulWidget {
 }
 
 class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
-  // 发电功率数据
-  final List<FlSpot> powerData = [
-    const FlSpot(0, 2000),
-    const FlSpot(1, 2100),
-    const FlSpot(2, 1950),
-    const FlSpot(3, 2200),
-    const FlSpot(4, 2050),
-    const FlSpot(5, 2300),
-    const FlSpot(6, 2150),
+  // 使用 PowerData 模型存储发电数据
+  final List<PowerData> powerData = [
+    PowerData(
+      date: DateTime(2023, 5, 1),
+      powerGenerated: 2000,
+      efficiency: 90,
+      co2Reduction: 50,
+    ),
+    PowerData(
+      date: DateTime(2023, 5, 2),
+      powerGenerated: 2100,
+      efficiency: 92,
+      co2Reduction: 55,
+    ),
+    PowerData(
+      date: DateTime(2023, 5, 3),
+      powerGenerated: 1950,
+      efficiency: 88,
+      co2Reduction: 48,
+    ),
   ];
 
   // 发电量统计数据
@@ -87,6 +99,7 @@ class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
+                                    maxLines: 1,
                                     entry.key == '计划完成率'
                                         ? '${entry.value.toStringAsFixed(1)}%'
                                         : '${entry.value.toString()}kWh',
@@ -106,7 +119,7 @@ class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
               ),
             ),
             const SizedBox(height: 16),
-            // 功率曲线图
+            // 发电趋势图
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -114,7 +127,7 @@ class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      '功率曲线',
+                      '发电趋势',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -122,21 +135,37 @@ class _PowerMonitoringPageState extends State<PowerMonitoringPage> {
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
-                      height: 200,
+                      height: 300,
                       child: LineChart(
                         LineChartData(
-                          gridData: FlGridData(show: true),
-                          titlesData: FlTitlesData(show: true),
-                          borderData: FlBorderData(show: true),
                           lineBarsData: [
                             LineChartBarData(
-                              spots: powerData,
+                              spots:
+                                  powerData
+                                      .map(
+                                        (data) => FlSpot(
+                                          data.date.day.toDouble(),
+                                          data.powerGenerated,
+                                        ),
+                                      )
+                                      .toList(),
                               isCurved: true,
                               color: Colors.blue,
                               barWidth: 3,
                               dotData: FlDotData(show: true),
                             ),
                           ],
+                          titlesData: FlTitlesData(
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  final date = DateTime(2023, 5, value.toInt());
+                                  return Text('${date.month}/${date.day}');
+                                },
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),

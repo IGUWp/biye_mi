@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:biye_mid/power_data_model.dart';
 
 class ExecutiveDashboard extends StatefulWidget {
   const ExecutiveDashboard({super.key});
@@ -9,6 +10,27 @@ class ExecutiveDashboard extends StatefulWidget {
 }
 
 class _ExecutiveDashboardState extends State<ExecutiveDashboard> {
+  // 使用 PowerData 和 DeviceStatus 模型
+  final List<PowerData> powerData = [
+    PowerData(
+      date: DateTime(2023, 5, 1),
+      powerGenerated: 2000,
+      efficiency: 90,
+      co2Reduction: 50,
+    ),
+    PowerData(
+      date: DateTime(2023, 5, 2),
+      powerGenerated: 2100,
+      efficiency: 92,
+      co2Reduction: 55,
+    ),
+  ];
+
+  final List<DeviceStatus> deviceStatus = [
+    DeviceStatus(name: '风机1号', status: '正常', power: 2000, speed: 12.5),
+    DeviceStatus(name: '风机2号', status: '警告', power: 1800, speed: 11.8),
+  ];
+
   // 关键指标数据
   final Map<String, dynamic> keyMetrics = {
     '总发电量': 12600000,
@@ -79,29 +101,15 @@ class _ExecutiveDashboardState extends State<ExecutiveDashboard> {
 
   // 预警信息
   final List<Map<String, dynamic>> alerts = [
-    {
-      'title': '设备维护提醒',
-      'content': '3号风机需要定期维护',
-      'level': 'warning',
-    },
-    {
-      'title': '发电效率异常',
-      'content': '本周发电效率低于预期',
-      'level': 'error',
-    },
-    {
-      'title': '成本控制良好',
-      'content': '本月维护成本在预算范围内',
-      'level': 'success',
-    },
+    {'title': '设备维护提醒', 'content': '3号风机需要定期维护', 'level': 'warning'},
+    {'title': '发电效率异常', 'content': '本周发电效率低于预期', 'level': 'error'},
+    {'title': '成本控制良好', 'content': '本月维护成本在预算范围内', 'level': 'success'},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('领导决策中心'),
-      ),
+      appBar: AppBar(title: const Text('领导决策中心')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -128,40 +136,43 @@ class _ExecutiveDashboardState extends State<ExecutiveDashboard> {
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,
                       childAspectRatio: 1.5,
-                      children: keyMetrics.entries.map((entry) {
-                        return Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                entry.key,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                      children:
+                          keyMetrics.entries.map((entry) {
+                            return Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                entry.key == '总发电量'
-                                    ? '${entry.value.toString()}kWh'
-                                    : entry.key == '总收入'
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    entry.key,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    maxLines: 1,
+                                    overflow: TextOverflow.visible,
+                                    entry.key == '总发电量'
+                                        ? '${entry.value.toString()}kWh'
+                                        : entry.key == '总收入'
                                         ? '¥${entry.value.toString()}'
                                         : '${entry.value.toString()}%',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
-                                ),
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
+                            );
+                          }).toList(),
                     ),
                   ],
                 ),
@@ -258,9 +269,34 @@ class _ExecutiveDashboardState extends State<ExecutiveDashboard> {
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            // 新增的关键指标和设备状态
+            const Text(
+              '关键指标',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...powerData.map((data) {
+              return ListTile(
+                title: Text('发电量: ${data.powerGenerated} kWh'),
+                subtitle: Text('效率: ${data.efficiency}%'),
+              );
+            }).toList(),
+            const Divider(),
+            const Text(
+              '设备状态',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...deviceStatus.map((device) {
+              return ListTile(
+                title: Text(device.name),
+                subtitle: Text('状态: ${device.status}'),
+              );
+            }).toList(),
           ],
         ),
       ),
     );
   }
-} 
+}
